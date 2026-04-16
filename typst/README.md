@@ -23,5 +23,5 @@ typst compile typst/main.typ
 ## 说明
 
 - 保留与 LaTeX 版本接近的章节拆分方式（front/body/back）。
-- 引文使用 `@文献键`，文献数据源复用仓库根目录的 `CCNUthesis-main.bib`。
+- 引文使用 `@文献键`，文献数据源使用 `typst/CCNUthesis-main.bib`（由仓库原始 bib 拷贝而来，便于独立编译）。
 - 本版本定位为“可编译的 Typst 起始模板”，便于后续继续补齐学校细节规范。

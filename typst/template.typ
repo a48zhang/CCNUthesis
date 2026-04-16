@@ -9,8 +9,9 @@
     margin: (top: 2.8cm, bottom: 2.8cm, left: 3cm, right: 2.5cm),
     numbering: "1",
   )
-  set text(font: "Noto Serif CJK SC", size: 12pt, lang: "zh")
+  set text(size: 12pt, lang: "zh")
   set par(first-line-indent: 2em, justify: true)
+  set math.equation(numbering: "(1)")
 
   show heading.where(level: 1): it => [
     #v(0.6em)

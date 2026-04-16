@@ -42,7 +42,7 @@
 
 #pagebreak()
 
-#bibliography("../CCNUthesis-main.bib", title: [参考文献])
+#bibliography("CCNUthesis-main.bib", title: [参考文献])
 
 #pagebreak()
 
