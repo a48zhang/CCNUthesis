@@ -41,8 +41,17 @@ typst compile typst/main.typ
 若本机 LaTeX 使用了不同字体，可通过环境变量覆盖预检字体列表：
 
 ```bash
-REQUIRED_FONTS="Times New Roman,SimSun,Arial,Courier New" ./typst/validate-parity.sh
+REQUIRED_FONTS="Times New Roman,Arial,Courier New" ./typst/validate-parity.sh
 ```
+
+默认值为 `Times New Roman,Arial,Courier New`，定义在 `typst/validate-parity.sh` 中。
+若你的 LaTeX 配置显式依赖 CJK 字体（如 SimSun），可改为：
+
+```bash
+REQUIRED_FONTS="Times New Roman,Arial,Courier New,SimSun" ./typst/validate-parity.sh
+```
+
+可先根据仓库根目录 `ccnu-setup.tex` 的 `font`/`cjk-font` 配置与 `main.log` 中的字体记录确认 LaTeX 实际使用字体，再设置 `REQUIRED_FONTS`。
 
 脚本会：
 

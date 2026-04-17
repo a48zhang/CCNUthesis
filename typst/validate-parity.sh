@@ -25,18 +25,20 @@ trap cleanup EXIT
 LATEX_PDF="$WORK_DIR/latex.pdf"
 TYPST_PDF="$WORK_DIR/typst.pdf"
 
-echo "[0/4] preflight font check"
+echo "[1/5] preflight font check"
 IFS=',' read -r -a FONT_LIST <<< "$REQUIRED_FONTS"
+AVAILABLE_FONTS="$(fc-list : family | tr ',' '\n' | sed 's/^ *//;s/ *$//' | tr '[:upper:]' '[:lower:]')"
 for font in "${FONT_LIST[@]}"; do
-  font_name="$(echo "$font" | xargs)"
-  if ! fc-list -q "$font_name"; then
-    echo "missing required font: $font_name"
+  trimmed_font="$(echo "$font" | xargs | tr '[:upper:]' '[:lower:]')"
+  if ! grep -Fxq "$trimmed_font" <<< "$AVAILABLE_FONTS"; then
+    echo "missing required font: $trimmed_font"
     echo "set REQUIRED_FONTS to match your local LaTeX font config before parity validation."
+    echo "hint: run 'fc-list : family | sort -u' to inspect installed fonts."
     exit 1
   fi
 done
 
-echo "[1/4] compile LaTeX: $LATEX_ENTRY"
+echo "[2/5] compile LaTeX: $LATEX_ENTRY"
 (
   cd "$LATEX_DIR"
   latexmk -C >/dev/null 2>&1 || true
@@ -44,10 +46,10 @@ echo "[1/4] compile LaTeX: $LATEX_ENTRY"
 )
 cp "$LATEX_DIR/$LATEX_STEM.pdf" "$LATEX_PDF"
 
-echo "[2/4] compile Typst: $TYPST_ENTRY"
+echo "[3/5] compile Typst: $TYPST_ENTRY"
 typst compile "$TYPST_ENTRY" "$TYPST_PDF" >/dev/null
 
-echo "[3/4] rasterize pdf pages"
+echo "[4/5] rasterize pdf pages"
 pdftoppm -r 200 -png "$LATEX_PDF" "$WORK_DIR/latex"
 pdftoppm -r 200 -png "$TYPST_PDF" "$WORK_DIR/typst"
 
@@ -59,7 +61,7 @@ if [[ "$LATEX_PAGES" != "$TYPST_PAGES" ]]; then
   exit 1
 fi
 
-echo "[4/4] pixel diff (exact, AE == 0)"
+echo "[5/5] pixel diff (exact, AE == 0)"
 mapfile -t LATEX_IMAGES < <(find "$WORK_DIR" -name 'latex-*.png' | sort)
 mapfile -t TYPST_IMAGES < <(find "$WORK_DIR" -name 'typst-*.png' | sort)
 

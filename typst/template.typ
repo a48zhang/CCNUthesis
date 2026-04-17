@@ -12,7 +12,7 @@
   set text(
     size: 12pt,
     lang: "zh",
-    font: meta.text_font + meta.cjk_font + meta.sans_font + meta.mono_font,
+    font: meta.text_font + meta.cjk_font,
   )
   set par(first-line-indent: 2em, justify: true)
   set math.equation(numbering: "(1)")
@@ -34,7 +34,7 @@
 #let cover-page(meta) = [
   #set align(center)
   #v(1.2cm)
-  #text(18pt, weight: "bold", font: meta.cover_title_font)[#meta.university_name]
+  #text(18pt, weight: "bold", font: meta.title_font)[#meta.university_name]
   #text(15pt)[#meta.thesis_label]
 
   #v(2.5cm)
