@@ -99,6 +99,16 @@
 ```
 
 
+
+## Typst 版本
+
+仓库新增了一个可独立使用的 Typst 示例版本，目录为 `typst/`。
+
+- 编译命令：`typst compile typst/main.typ`
+- 入口文件：`typst/main.typ`
+- 使用说明：`typst/README.md`
+- 像素级对比验收：`./typst/validate-parity.sh`
+
 ## 重要提醒
 
 1. 本模板未经学校相关部门审核及授权，使用前请务必斟酌。
