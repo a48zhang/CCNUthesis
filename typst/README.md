@@ -27,6 +27,7 @@ typst compile typst/main.typ
 - 保留与 LaTeX 版本接近的章节拆分方式（front/body/back）。
 - 引文使用 `@文献键`，文献数据源使用 `typst/CCNUthesis-main.bib`（由仓库原始 bib 拷贝而来，便于独立编译）。
 - 论文信息（题目、作者、导师等）集中在 `ccnu-setup.typ`，避免在版式代码中写死。
+- `ccnu-setup.typ` 中的 `degree` 请按实际学位填写单一值（如：`本科`/`硕士`/`博士`）。
 
 ## 像素级验收
 

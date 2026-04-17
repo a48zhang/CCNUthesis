@@ -4,13 +4,19 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LATEX_ENTRY="${1:-$ROOT_DIR/main.tex}"
 TYPST_ENTRY="${2:-$ROOT_DIR/typst/main.typ}"
-WORK_DIR="$(mktemp -d /tmp/ccnu-parity-XXXXXX)"
+WORK_DIR="$(mktemp -d)"
+KEEP_WORKDIR="${KEEP_WORKDIR:-0}"
 LATEX_ENTRY_ABS="$(realpath "$LATEX_ENTRY")"
 LATEX_DIR="$(dirname "$LATEX_ENTRY_ABS")"
 LATEX_BASENAME="$(basename "$LATEX_ENTRY_ABS")"
 LATEX_STEM="${LATEX_BASENAME%.tex}"
 
 cleanup() {
+  status=$?
+  if [[ "$status" -ne 0 || "$KEEP_WORKDIR" == "1" ]]; then
+    echo "preserved work directory: $WORK_DIR"
+    return
+  fi
   rm -rf "$WORK_DIR"
 }
 trap cleanup EXIT
@@ -33,8 +39,8 @@ echo "[3/4] rasterize pdf pages"
 pdftoppm -r 200 -png "$LATEX_PDF" "$WORK_DIR/latex"
 pdftoppm -r 200 -png "$TYPST_PDF" "$WORK_DIR/typst"
 
-LATEX_PAGES=$(find "$WORK_DIR" -name 'latex-*.png' | wc -l | tr -d ' ')
-TYPST_PAGES=$(find "$WORK_DIR" -name 'typst-*.png' | wc -l | tr -d ' ')
+LATEX_PAGES="$(pdfinfo "$LATEX_PDF" | awk '/^Pages:/ {print $2}')"
+TYPST_PAGES="$(pdfinfo "$TYPST_PDF" | awk '/^Pages:/ {print $2}')"
 
 if [[ "$LATEX_PAGES" != "$TYPST_PAGES" ]]; then
   echo "page count mismatch: latex=$LATEX_PAGES typst=$TYPST_PAGES"
@@ -42,18 +48,22 @@ if [[ "$LATEX_PAGES" != "$TYPST_PAGES" ]]; then
 fi
 
 echo "[4/4] pixel diff (exact, AE == 0)"
-for ((i=1; i<=LATEX_PAGES; i++)); do
-  PAGE="$(printf "%02d" "$i")"
-  L="$WORK_DIR/latex-$PAGE.png"
-  T="$WORK_DIR/typst-$PAGE.png"
-  if [[ ! -f "$L" || ! -f "$T" ]]; then
-    echo "missing rasterized page: $PAGE"
-    exit 1
-  fi
+mapfile -t LATEX_IMAGES < <(find "$WORK_DIR" -name 'latex-*.png' | sort)
+mapfile -t TYPST_IMAGES < <(find "$WORK_DIR" -name 'typst-*.png' | sort)
+
+if [[ "${#LATEX_IMAGES[@]}" != "$LATEX_PAGES" || "${#TYPST_IMAGES[@]}" != "$TYPST_PAGES" ]]; then
+  echo "rasterized page count mismatch"
+  exit 1
+fi
+
+for ((i=0; i<LATEX_PAGES; i++)); do
+  L="${LATEX_IMAGES[$i]}"
+  T="${TYPST_IMAGES[$i]}"
+  PAGE=$((i + 1))
 
   DIFF_PIXELS="$(compare -metric AE "$L" "$T" null: 2>&1 || true)"
   if [[ "$DIFF_PIXELS" != "0" ]]; then
-    echo "page $i mismatch: AE=$DIFF_PIXELS"
+    echo "page $PAGE mismatch: AE=$DIFF_PIXELS"
     exit 1
   fi
 done

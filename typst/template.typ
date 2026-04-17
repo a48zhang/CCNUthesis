@@ -30,8 +30,8 @@
 #let cover-page(meta) = [
   #set align(center)
   #v(1.2cm)
-  #text(18pt, weight: "bold")[华中师范大学]
-  #text(15pt)[学位论文]
+  #text(18pt, weight: "bold")[#meta.university_name]
+  #text(15pt)[#meta.thesis_label]
 
   #v(2.5cm)
   #text(20pt, weight: "bold")[#meta.title]
