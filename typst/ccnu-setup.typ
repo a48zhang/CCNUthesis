@@ -1,4 +1,9 @@
 #let meta = (
+  text_font: ("Times New Roman", "Tinos", "TeX Gyre Termes"),
+  cjk_font: ("SimSun", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "FandolSong"),
+  sans_font: ("Arial", "Arimo", "Nimbus Sans"),
+  mono_font: ("Courier New", "Cousine", "Nimbus Mono PS"),
+  cover_title_font: ("STXinwei", "STKaiti", "KaiTi", "FandolHei"),
   university_name: "华中师范大学",
   thesis_label: "学位论文",
   title: "华中师范大学学位论文 Typst 模板",

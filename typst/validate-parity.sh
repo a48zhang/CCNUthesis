@@ -6,6 +6,7 @@ LATEX_ENTRY="${1:-$ROOT_DIR/main.tex}"
 TYPST_ENTRY="${2:-$ROOT_DIR/typst/main.typ}"
 WORK_DIR="$(mktemp -d)"
 KEEP_WORKDIR="${KEEP_WORKDIR:-0}"
+REQUIRED_FONTS="${REQUIRED_FONTS:-Times New Roman,Arial,Courier New}"
 LATEX_ENTRY_ABS="$(realpath "$LATEX_ENTRY")"
 LATEX_DIR="$(dirname "$LATEX_ENTRY_ABS")"
 LATEX_BASENAME="$(basename "$LATEX_ENTRY_ABS")"
@@ -23,6 +24,17 @@ trap cleanup EXIT
 
 LATEX_PDF="$WORK_DIR/latex.pdf"
 TYPST_PDF="$WORK_DIR/typst.pdf"
+
+echo "[0/4] preflight font check"
+IFS=',' read -r -a FONT_LIST <<< "$REQUIRED_FONTS"
+for font in "${FONT_LIST[@]}"; do
+  font_name="$(echo "$font" | xargs)"
+  if ! fc-list -q "$font_name"; then
+    echo "missing required font: $font_name"
+    echo "set REQUIRED_FONTS to match your local LaTeX font config before parity validation."
+    exit 1
+  fi
+done
 
 echo "[1/4] compile LaTeX: $LATEX_ENTRY"
 (

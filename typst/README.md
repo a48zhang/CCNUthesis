@@ -28,6 +28,7 @@ typst compile typst/main.typ
 - 引文使用 `@文献键`，文献数据源使用 `typst/CCNUthesis-main.bib`（由仓库原始 bib 拷贝而来，便于独立编译）。
 - 论文信息（题目、作者、导师等）集中在 `ccnu-setup.typ`，避免在版式代码中写死。
 - `ccnu-setup.typ` 中的 `degree` 请按实际学位填写单一值（如：`本科`/`硕士`/`博士`）。
+- `ccnu-setup.typ` 中可配置中英文字体族（`text_font`/`cjk_font`/`sans_font`/`mono_font`），用于对齐 LaTeX 字体效果。
 
 ## 像素级验收
 
@@ -35,6 +36,12 @@ typst compile typst/main.typ
 
 ```bash
 ./typst/validate-parity.sh
+```
+
+若本机 LaTeX 使用了不同字体，可通过环境变量覆盖预检字体列表：
+
+```bash
+REQUIRED_FONTS="Times New Roman,SimSun,Arial,Courier New" ./typst/validate-parity.sh
 ```
 
 脚本会：
